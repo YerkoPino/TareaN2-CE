@@ -12,11 +12,6 @@ best_const = 0
 def gp_add(a, b): return a+b
 def gp_sub(a, b): return a-b
 def gp_mul(a, b): return a*b
-def gp_div(a, b): 
-   if b==0:
-      return a/math.pow(10,-50)
-   else:
-      return a/b
 def gp_exp(a):
    if a<100:
       return math.exp(a)
@@ -69,10 +64,6 @@ def eval_func(chromosome):
 
    return error_accum.getRMSE()
 
-def step_callback(gp_engine):
-   if gp_engine.getCurrentGeneration() == 49:
-      GTree.GTreeGP.writePopulationDot(gp_engine, "trees_pima.jpg", start=0, end=1)
-
 def main_run():
    global fitness
    global best_const
@@ -81,7 +72,6 @@ def main_run():
    genome.evaluator.set(eval_func)
 
    ga = GSimpleGA.GSimpleGA(genome)
-   ga.stepCallback.set(step_callback)
    sqlite_adapter = DBAdapters.DBSQLite(identify="expima")
    ga.setDBAdapter(sqlite_adapter)
 
@@ -95,7 +85,10 @@ def main_run():
    ga.setPopulationSize(1000)
    ga.evolve(freq_stats=5)
 
-   print ga.bestIndividual()
+   best = ga.bestIndividual()
+   best.writeDotImage("best_pima.jpg")
+
+   print best
    print 'Fitness mejor individuo'
    print fitness
    print 'Valor constante'
